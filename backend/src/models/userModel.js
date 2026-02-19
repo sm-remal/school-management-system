@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'teacher', 'student', 'parent'], 
+      enum: ['admin', 'teacher', 'student', 'parent'],
       default: 'student',
     },
     isActive: {
@@ -27,10 +27,11 @@ const userSchema = mongoose.Schema(
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 
+// Before user save, this code will be run
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     next();
@@ -39,10 +40,11 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-
+// When login
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+// Create model
 const User = mongoose.model('User', userSchema);
 export default User;
